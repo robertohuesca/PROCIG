@@ -1,3 +1,39 @@
 <resources>
     <string name="app_name">PROCIG</string>
+
+    <string-array name="reports_array">
+        <item>Formato 1</item>
+        <item>Formato 2</item>
+        <item>Formato 3</item>
+        <item>Formato 4</item>
+        <item>Formato 5</item>
+        <item>Formato 6</item>
+        <item>Formato 7</item>
+        <item>Formato 8</item>
+        <item>Formato 9</item>
+        <item>Formato 10</item>
+    </string-array>
+
+    <string-array name="dependencias">
+        <item>H. Salud Mental</item>
+        <item>H. Rovirosa</item>
+        <item>Seguro Popular</item>
+    </string-array>
+    <string name="prompt_user">Usuario</string>
+    <string name="prompt_password">Contraseña </string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
+    <string name="title_activity_menu">MenuActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
 </resources>

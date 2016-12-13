@@ -4,8 +4,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import org.ksoap2.SoapEnvelope;
@@ -23,19 +27,23 @@ public class Principal extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_principal);
 
-
+        Spinner spinner = (Spinner) findViewById(R.id.spinner);
+// Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.reports_array, android.R.layout.simple_spinner_item);
+// Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+// Apply the adapter to the spinner
+        spinner.setAdapter(adapter);
 
     }
 
-   /* public void Btn_Imagen(View v)
+    public void Btn_Imagen(View v)
     {
-        Thread th = new Thread() {
+       Thread th = new Thread() {
             String res;
             String countpr;
             String counta;
-
-            EditText usuario = (EditText) findViewById(R.id.username);
-            EditText password = (EditText) findViewById(R.id.password);
 
             @Override
             public void run() {
@@ -45,8 +53,6 @@ public class Principal extends AppCompatActivity {
                 String SOAP_ACTION = "http://saxsoft/MocrosoftWebService/reporte";
 
                 SoapObject request = new SoapObject(NAMESPACE, METHOD_NAME);
-                request.addProperty("USER", usuario.getText().toString());
-                request.addProperty("PASS", password.getText().toString());
 
                 SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
                 envelope.dotNet = true;
@@ -56,7 +62,7 @@ public class Principal extends AppCompatActivity {
                 try {
                     transporte.call(SOAP_ACTION, envelope);
                     SoapObject body = (SoapObject)envelope.bodyIn;
-                    res = body.toString();
+                    res = body.getProperty(0).toString();
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -68,9 +74,16 @@ public class Principal extends AppCompatActivity {
                     @Override
                     public void run() {
 
-                        if (res.equals("1")) {
-
+                       String base = res;
+                        byte[] imageAsBytes = Base64.decode(base.getBytes(), Base64.DEFAULT);
+                        ImageView image = (ImageView)findViewById(R.id.imageView);
+                        image.setImageBitmap(BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length));
+                       /* if (res.equals("1")) {
+                            Toast.makeText(Principal.this, res, Toast.LENGTH_LONG).show();
                         }
+                        else {
+                            Toast.makeText(Principal.this, res, Toast.LENGTH_LONG).show();
+                        }*/
 
                     }
                 });
@@ -83,7 +96,7 @@ public class Principal extends AppCompatActivity {
         /*Bitmap bitmap = BitmapFactory.decodeByteArray(blob, 0, blob.length);*/
 
 
-    //}
+    }
 
 
 }
