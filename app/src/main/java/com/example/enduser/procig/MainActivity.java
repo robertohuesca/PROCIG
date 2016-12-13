@@ -93,9 +93,7 @@ public class MainActivity extends AppCompatActivity {
                     SoapObject body = (SoapObject) envelope.bodyIn;
                     res = body.getProperty(0).toString();
 
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (XmlPullParserException e) {
+                } catch (IOException |XmlPullParserException e) {
                     e.printStackTrace();
                 }
 
@@ -103,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
 
-                        if (res != "INVALIDO") {
+                        if (!res.equalsIgnoreCase( "INVALIDO")) {
                             Intent Abrir = new Intent(MainActivity.this, MenuActivity.class);
                            Abrir.putExtra("Usuario",res);
                             //TextView nombre = (TextView) findViewById(R.id.name_user);
