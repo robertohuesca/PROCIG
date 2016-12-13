@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        //dependencia="Mental";
+
     }
 
     public void LoginOnClick(View v) {
