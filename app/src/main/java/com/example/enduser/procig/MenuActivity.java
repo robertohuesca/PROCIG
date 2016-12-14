@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,8 @@ import android.view.MenuItem;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.io.IOException;
 
 public class MenuActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -50,21 +53,18 @@ public class MenuActivity extends AppCompatActivity
         String nombre = getIntent().getStringExtra("Usuario");
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        View header=navigationView.getHeaderView(0);
+        View header = navigationView.getHeaderView(0);
 /*View view=navigationView.inflateHeaderView(R.layout.nav_header_main);*/
-        TextView name = (TextView)header.findViewById(R.id.name_user);
+        TextView name = (TextView) header.findViewById(R.id.name_user);
 
         name.setText(nombre);
 
 
-
-       // LayoutInflater inflater = LayoutInflater.from(this);
+        // LayoutInflater inflater = LayoutInflater.from(this);
         //View inflatedView = inflater.inflate(R.layout.nav_header_menu, parentView, true);
 
 
-
-
-       // String nombre = getIntent().getStringExtra("Usuario");
+        // String nombre = getIntent().getStringExtra("Usuario");
         //Toast.makeText(MenuActivity.this,"", Toast.LENGTH_LONG).show();
         //TextView name = (TextView) findViewById(R.id.name_user);
         //name.setText(nombre);
@@ -109,11 +109,12 @@ public class MenuActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        FragmentManager fm = getSupportFragmentManager();
 
         if (id == R.id.nav_camera) {
             // Handle the camera action
             RelativeLayout mainLayout = (RelativeLayout) findViewById(R.id.content_menu);
-            LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             View layout = inflater.inflate(R.layout.activity_principal, null);
             mainLayout.removeAllViews();
             mainLayout.addView(layout);
@@ -121,7 +122,7 @@ public class MenuActivity extends AppCompatActivity
             Intent in = new Intent(this, Principal.class);
             startActivity(in);
         } else if (id == R.id.nav_slideshow) {
-
+            fm.beginTransaction().replace(R.id.content_menu, new principal_f()).commit();
         } else if (id == R.id.nav_manage) {
 
         } else if (id == R.id.nav_share) {
