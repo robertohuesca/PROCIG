@@ -1,8 +1,11 @@
 package com.example.enduser.procig;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -13,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -77,13 +81,7 @@ public class MenuActivity extends AppCompatActivity
         }
     }
 
-    public void obtener(){
-        setContentView(R.layout.nav_header_menu);
-        TextView name = (TextView) findViewById(R.id.name_user);
-        //String dato = name.getText().toString();
-        name.setText(getIntent().getStringExtra("Usuario"));
-        //Toast.makeText(MenuActivity.this,dato, Toast.LENGTH_LONG).show();
-    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -114,8 +112,14 @@ public class MenuActivity extends AppCompatActivity
 
         if (id == R.id.nav_camera) {
             // Handle the camera action
+            RelativeLayout mainLayout = (RelativeLayout) findViewById(R.id.content_menu);
+            LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            View layout = inflater.inflate(R.layout.activity_principal, null);
+            mainLayout.removeAllViews();
+            mainLayout.addView(layout);
         } else if (id == R.id.nav_gallery) {
-
+            Intent in = new Intent(this, Principal.class);
+            startActivity(in);
         } else if (id == R.id.nav_slideshow) {
 
         } else if (id == R.id.nav_manage) {
