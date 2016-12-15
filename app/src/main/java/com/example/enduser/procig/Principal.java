@@ -30,20 +30,17 @@ public class Principal extends AppCompatActivity {
         Spinner spinner = (Spinner) findViewById(R.id.spinner);
 // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.reports_array, android.R.layout.simple_spinner_item);
+                R.array.array_reportes_contables, android.R.layout.simple_spinner_item);
 // Specify the layout to use when the list of choices appears
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 // Apply the adapter to the spinner
         spinner.setAdapter(adapter);
-
     }
 
     public void Btn_Imagen(View v)
     {
        Thread th = new Thread() {
             String res;
-            String countpr;
-            String counta;
 
             @Override
             public void run() {
@@ -77,24 +74,12 @@ public class Principal extends AppCompatActivity {
                        String base = res;
                         byte[] imageAsBytes = Base64.decode(base.getBytes(), Base64.DEFAULT);
                         ImageView image = (ImageView)findViewById(R.id.imageView);
-                        image.setImageBitmap(BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length));
-                       /* if (res.equals("1")) {
-                            Toast.makeText(Principal.this, res, Toast.LENGTH_LONG).show();
-                        }
-                        else {
-                            Toast.makeText(Principal.this, res, Toast.LENGTH_LONG).show();
-                        }*/
 
                     }
                 });
             }
         };
-
         th.start();
-
-
-        /*Bitmap bitmap = BitmapFactory.decodeByteArray(blob, 0, blob.length);*/
-
 
     }
 

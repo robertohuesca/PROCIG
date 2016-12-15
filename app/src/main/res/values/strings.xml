@@ -1,17 +1,17 @@
 <resources>
     <string name="app_name">PROCIG</string>
 
-    <string-array name="reports_array">
-        <item>Formato 1</item>
-        <item>Formato 2</item>
-        <item>Formato 3</item>
-        <item>Formato 4</item>
-        <item>Formato 5</item>
-        <item>Formato 6</item>
-        <item>Formato 7</item>
-        <item>Formato 8</item>
-        <item>Formato 9</item>
-        <item>Formato 10</item>
+    <string-array name="array_reportes_presupuestales">
+        <item>Presupuestal 1</item>
+        <item>Presupuestal 2</item>
+        <item>Presupuestal 3</item>
+    </string-array>
+
+    <string-array name="array_reportes_contables">
+        <item>Contables 1</item>
+        <item>Contables 2</item>
+        <item>Contables 3</item>
+        <item>Contables 4</item>
     </string-array>
 
     <string-array name="dependencias">
@@ -19,6 +19,12 @@
         <item>H. Rovirosa</item>
         <item>Seguro Popular</item>
     </string-array>
+
+
+
+
+
+
     <string name="prompt_user">Usuario</string>
     <string name="prompt_password">Contraseña </string>
     <string name="action_sign_in">Sign in or register</string>
@@ -37,6 +43,4 @@
 
     <string name="action_settings">Opciones</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

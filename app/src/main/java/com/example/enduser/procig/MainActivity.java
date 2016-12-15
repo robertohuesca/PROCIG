@@ -30,42 +30,36 @@ public class MainActivity extends AppCompatActivity {
     private Spinner spinner;
     private String dependencia;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
         spinner = (Spinner) findViewById(R.id.spinner2);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 switch (spinner.getSelectedItem().toString().toUpperCase()) {
-                                case "H. ROVIROSA":
-                                    dependencia="Rovirosa";
-                                    break;
-                                case "H. SALUD MENTAL":
-                                    dependencia="Mental";
-                                    break;
-                                case "SEGURO POPULAR":
-                                    dependencia="Popular";
-                                    break;
-                                default:
-                                    break;
-
-                            }
+                    case "H. ROVIROSA":
+                        dependencia = "Rovirosa";
+                        break;
+                    case "H. SALUD MENTAL":
+                        dependencia = "Mental";
+                        break;
+                    case "SEGURO POPULAR":
+                        dependencia = "Popular";
+                        break;
+                    default:
+                        break;
+                }
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-
             }
         });
-
     }
 
     public void LoginOnClick(View v) {
-
         Thread th = new Thread() {
             String res;
             EditText usuario = (EditText) findViewById(R.id.user);
@@ -93,21 +87,20 @@ public class MainActivity extends AppCompatActivity {
                     SoapObject body = (SoapObject) envelope.bodyIn;
                     res = body.getProperty(0).toString();
 
-                } catch (IOException |XmlPullParserException e) {
+                } catch (IOException | XmlPullParserException e) {
                     e.printStackTrace();
                 }
-
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
 
-                        if (!res.equalsIgnoreCase( "INVALIDO")) {
+                        if (!res.equalsIgnoreCase("INVALIDO")) {
                             Intent Abrir = new Intent(MainActivity.this, MenuActivity.class);
-                           Abrir.putExtra("Usuario",res);
-                            //TextView nombre = (TextView) findViewById(R.id.name_user);
-                            //nombre.setText(res);
+                            Abrir.putExtra("Usuario", res);
+                            usuario.setText("");
+                            password.setText("");
                             startActivity(Abrir);
-                            Toast.makeText(MainActivity.this,"Sesión Iniciada", Toast.LENGTH_LONG).show();
+                            //Toast.makeText(MainActivity.this,"Sesión Iniciada", Toast.LENGTH_LONG).show();
                         } else {
                             Toast.makeText(MainActivity.this, "Usuario Invalido", Toast.LENGTH_LONG).show();
                         }
@@ -116,7 +109,6 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
         };
-
         th.start();
     }
 
@@ -124,19 +116,19 @@ public class MainActivity extends AppCompatActivity {
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
+     * <p>
+     * public Action getIndexApiAction() {
+     * Thing object = new Thing.Builder()
+     * .setName("Main Page") // TODO: Define a title for the content shown.
+     * // TODO: Make sure this auto-generated URL is correct.
+     * .setUrl(Uri.parse("http://[ENTER-YOUR-URL-HERE]"))
+     * .build();
+     * return new Action.Builder(Action.TYPE_VIEW)
+     * .setObject(object)
+     * .setActionStatus(Action.STATUS_TYPE_COMPLETED)
+     * .build();
+     * }
      */
-    public Action getIndexApiAction() {
-        Thing object = new Thing.Builder()
-                .setName("Main Page") // TODO: Define a title for the content shown.
-                // TODO: Make sure this auto-generated URL is correct.
-                .setUrl(Uri.parse("http://[ENTER-YOUR-URL-HERE]"))
-                .build();
-        return new Action.Builder(Action.TYPE_VIEW)
-                .setObject(object)
-                .setActionStatus(Action.STATUS_TYPE_COMPLETED)
-                .build();
-    }
-
     @Override
     public void onStart() {
         super.onStart();
@@ -145,7 +137,6 @@ public class MainActivity extends AppCompatActivity {
         // See https://g.co/AppIndexing/AndroidStudio for more information.
 
     }
-
     @Override
     public void onStop() {
         super.onStop();
