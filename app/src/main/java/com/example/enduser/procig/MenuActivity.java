@@ -31,6 +31,8 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
 
 public class MenuActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+    byte[] imageAsBytes;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -61,14 +63,7 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
         TextView name = (TextView) header.findViewById(R.id.name_user);
 
         name.setText(nombre);
-        // LayoutInflater inflater = LayoutInflater.from(this);
-        //View inflatedView = inflater.inflate(R.layout.nav_header_menu, parentView, true);
-
-
-        // String nombre = getIntent().getStringExtra("Usuario");
-        //Toast.makeText(MenuActivity.this,"", Toast.LENGTH_LONG).show();
-        //TextView name = (TextView) findViewById(R.id.name_user);
-        //name.setText(nombre);
+        imageAsBytes = null;
 
     }
 
@@ -100,6 +95,7 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
         }
         return super.onOptionsItemSelected(item);
     }
+
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -166,7 +162,7 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
                     @Override
                     public void run() {
                         String base = res;
-                        byte[] imageAsBytes = Base64.decode(base.getBytes(), Base64.DEFAULT);
+                        imageAsBytes = Base64.decode(base.getBytes(), Base64.DEFAULT);
                         ImageView image = (ImageView) findViewById(R.id.imageView);
                         image.setImageBitmap(BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length));
                     }
@@ -180,5 +176,11 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
         Intent intent = new Intent(this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
+    }
+
+    public void abrirGaleria(View v) {
+            Intent galeria = new Intent(this, Galeria.class);
+            galeria.putExtra("reporte", imageAsBytes);
+            startActivity(galeria);
     }
 }

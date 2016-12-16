@@ -21,10 +21,6 @@
     </string-array>
 
 
-
-
-
-
     <string name="prompt_user">Usuario</string>
     <string name="prompt_password">Contraseña </string>
     <string name="action_sign_in">Sign in or register</string>
@@ -42,5 +38,9 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Opciones</string>
+
+    <string name="title_activity_galeria">Galeria</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 
 </resources>
