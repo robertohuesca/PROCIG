@@ -76,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
                 request.addProperty("USER", usuario.getText().toString());
                 request.addProperty("PASS", password.getText().toString());
                 request.addProperty("DEPENDENCIA", dependencia);
+                request.addProperty("AEJERCICIO", "2016");
 
                 SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
                 envelope.dotNet = true;

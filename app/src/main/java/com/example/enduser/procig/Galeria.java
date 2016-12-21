@@ -2,36 +2,21 @@ package com.example.enduser.procig;
 
 import android.annotation.SuppressLint;
 import android.graphics.BitmapFactory;
-import android.media.Image;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Base64;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
-/**
- * An example full-screen activity that shows and hides the system UI (i.e.
- * status bar and navigation/system bar) with user interaction.
- */
 public class Galeria extends AppCompatActivity {
-    /**
-     * Whether or not the system UI should be auto-hidden after
-     * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
-     */
+    /* Atributos*/
     private static final boolean AUTO_HIDE = true;
-    byte[] imageAsBytes;
-    /**
-     * If {@link #AUTO_HIDE} is set, the number of milliseconds to wait after
-     * user interaction before hiding the system UI.
-     */
     private static final int AUTO_HIDE_DELAY_MILLIS = 3000;
-
-    /**
-     * Some older devices needs a small delay between UI widget updates
-     * and a change of the status and navigation bar.
-     */
     private static final int UI_ANIMATION_DELAY = 300;
     private final Handler mHideHandler = new Handler();
     private ImageView mContentView;
@@ -39,11 +24,6 @@ public class Galeria extends AppCompatActivity {
         @SuppressLint("InlinedApi")
         @Override
         public void run() {
-            // Delayed removal of status and navigation bar
-
-            // Note that some of these constants are new as of API 16 (Jelly Bean)
-            // and API 19 (KitKat). It is safe to use them, as they are inlined
-            // at compile-time and do nothing on earlier devices.
             mContentView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
                     | View.SYSTEM_UI_FLAG_FULLSCREEN
                     | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -52,6 +32,7 @@ public class Galeria extends AppCompatActivity {
                     | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
         }
     };
+
     private View mControlsView;
     private final Runnable mShowPart2Runnable = new Runnable() {
         @Override
@@ -71,11 +52,6 @@ public class Galeria extends AppCompatActivity {
             hide();
         }
     };
-    /**
-     * Touch listener to use for in-layout UI controls to delay hiding the
-     * system UI. This is to prevent the jarring behavior of controls going away
-     * while interacting with activity UI.
-     */
     private final View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -86,41 +62,48 @@ public class Galeria extends AppCompatActivity {
         }
     };
 
+
+    private byte[][] imagenesEnBytes;
+    public static int posicion;
+    private ImageView visor;
+    private static TextView paginas;
+    private static String[] imagenesEnString;
+    //String a, b, c;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_galeria);
-
+        posicion = -1;
         mVisible = true;
         mControlsView = findViewById(R.id.fullscreen_content_controls);
-        mContentView = (ImageView) findViewById(R.id.fullscreen_content);
-
-
-        // Set up the user interaction to manually show or hide the system UI.
+        mContentView = (ImageView) findViewById(R.id.img_view_galeria_reporte);
         mContentView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 toggle();
             }
         });
-
-        // Upon interacting with UI controls, delay any scheduled hide()
-        // operations to prevent the jarring behavior of controls going away
-        // while interacting with the UI.
         findViewById(R.id.btn_galeria_sig).setOnTouchListener(mDelayHideTouchListener);
-        imageAsBytes=getIntent().getByteArrayExtra("reporte");
-        mContentView.setImageBitmap(BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length));
+        paginas = (TextView) findViewById(R.id.txv_galeria_paginas);
+        visor = (ImageView) findViewById(R.id.img_view_galeria_reporte);
+
+        visor.setImageBitmap(BitmapFactory.decodeByteArray(getIntent().getByteArrayExtra("0"), 0, getIntent().getByteArrayExtra("0").length));
+
+        /*imagenesEnString= new String[]{getIntent().getStringExtra("0")};
+        //imagenesEnString = getIntent().getStringArrayExtra("reportes");
+        imagenesEnBytes = StringAArrayBytes(imagenesEnString);
+        //imagenesEnString = getIntent().getStringArrayExtra("reportes");
+        imagenSiguiente(null);
+        contador();*/
+
 
     }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-
-        // Trigger the initial hide() shortly after the activity has been
-        // created, to briefly hint to the user that UI controls
-        // are available.
         delayedHide(100);
     }
 
@@ -158,12 +141,46 @@ public class Galeria extends AppCompatActivity {
         mHideHandler.postDelayed(mShowPart2Runnable, UI_ANIMATION_DELAY);
     }
 
-    /**
-     * Schedules a call to hide() in [delay] milliseconds, canceling any
-     * previously scheduled calls.
-     */
     private void delayedHide(int delayMillis) {
         mHideHandler.removeCallbacks(mHideRunnable);
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
+
+    /*private byte[][] StringAArrayBytes(String[] arrayString) {
+        byte[][] imagenes = new byte[arrayString.length][];
+        for (int i = 0; i < arrayString.length; i++) {
+            imagenes[i] = Base64.decode(arrayString[i].getBytes(), Base64.DEFAULT);
+        }
+        return imagenes;
+    }*/
+
+    public void imagenSiguiente(View v) {
+        byte[] imageAsBytes;
+        if (posicion < imagenesEnBytes.length - 1) {
+            imageAsBytes = imagenesEnBytes[++posicion];
+        } else {
+            posicion = 0;
+            imageAsBytes = imagenesEnBytes[posicion];
+        }
+
+        visor.setImageBitmap(BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length));
+        contador();
+    }
+
+    public void ImagenPrevia(View v) {
+        byte[] imageAsBytes;
+        if (posicion > 0) {
+            imageAsBytes = imagenesEnBytes[--posicion];
+        } else {
+            posicion = imagenesEnBytes.length - 1;
+            imageAsBytes = imagenesEnBytes[posicion];
+        }
+        visor.setImageBitmap(BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length));
+        contador();
+    }
+
+    private void contador() {
+        paginas.setText((posicion + 1) + " de " + imagenesEnBytes.length);
+    }
+
 }

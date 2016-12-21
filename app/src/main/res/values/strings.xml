@@ -2,9 +2,13 @@
     <string name="app_name">PROCIG</string>
 
     <string-array name="array_reportes_presupuestales">
-        <item>Presupuestal 1</item>
-        <item>Presupuestal 2</item>
-        <item>Presupuestal 3</item>
+        <item>Estado_Situacion_Financiera</item>
+        <item>Concilacion_Presupuestal</item>
+        <item>Estado_de_Actividades</item>
+        <item>Estado_Variacion_Hacienda_Publica</item>
+        <item>Estado_Analitico_Activo</item>
+        <item>NA</item>
+        <item>*</item>
     </string-array>
 
     <string-array name="array_reportes_contables">
@@ -18,6 +22,21 @@
         <item>H. Salud Mental</item>
         <item>H. Rovirosa</item>
         <item>Seguro Popular</item>
+    </string-array>
+
+    <string-array name="array_meses">
+        <item>Enero</item>
+        <item>Febrero</item>
+        <item>Marzo</item>
+        <item>Abril</item>
+        <item>Mayo</item>
+        <item>Junio</item>
+        <item>Julio</item>
+        <item>Agosto</item>
+        <item>Septiempre</item>
+        <item>Octubre</item>
+        <item>Noviembre</item>
+        <item>Diciembre</item>
     </string-array>
 
 

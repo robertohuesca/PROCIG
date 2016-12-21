@@ -9,11 +9,12 @@
          is needed to present your content, e.g. VideoView, SurfaceView,
          TextureView, etc. -->
     <ImageView
-        android:id="@+id/fullscreen_content"
+        android:id="@+id/img_view_galeria_reporte"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:keepScreenOn="true" />
+        android:keepScreenOn="true"
+        android:background="@color/common_google_signin_btn_text_light_default" />
 
     <!-- This FrameLayout insets its children based on system windows using
          android:fitsSystemWindows. -->
@@ -27,24 +28,39 @@
             style="?metaButtonBarStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center_horizontal"
+            android:layout_gravity="bottom"
             android:background="@color/black_overlay"
             android:orientation="horizontal"
-            tools:ignore="UselessParent">
+            tools:ignore="UselessParent"
+            android:paddingRight="10pt"
+            android:paddingLeft="10pt"
+            android:weightSum="4">
 
             <Button
                 android:text="Anterior"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/btn_galeria_ant"
-                android:layout_weight="1" />
+                android:onClick="ImagenPrevia"
+                android:layout_weight="1"/>
+
+            <TextView
+                android:text="0 de 0"
+                android:gravity="center|center_vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:id="@+id/txv_galeria_paginas"
+                android:layout_weight="2"
+                android:textColor="@android:color/white"
+                android:layout_gravity="center"/>
 
             <Button
                 android:id="@+id/btn_galeria_sig"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Siguiente" />
+                android:onClick="imagenSiguiente"
+                android:text="Siguiente"
+                android:layout_weight="1"/>
 
         </LinearLayout>
     </FrameLayout>
