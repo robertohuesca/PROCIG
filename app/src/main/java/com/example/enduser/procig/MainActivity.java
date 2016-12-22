@@ -31,6 +31,7 @@ import org.ksoap2.*;
 public class MainActivity extends AppCompatActivity {
     private Spinner spinner;
     private String dependencia;
+    private boolean coneccion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,69 +41,74 @@ public class MainActivity extends AppCompatActivity {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                dependencia=spinner.getSelectedItem().toString();
+                dependencia = spinner.getSelectedItem().toString();
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
             }
         });
+        coneccion = false;
         cargarDependencias();
 
     }
 
     public void LoginOnClick(View v) {
-        Thread th = new Thread() {
-            String res;
-            EditText usuario = (EditText) findViewById(R.id.user);
-            EditText password = (EditText) findViewById(R.id.pass);
+        if (coneccion == false) {
+            Toast.makeText(MainActivity.this, "No hubo respuesta del servidor", Toast.LENGTH_SHORT).show();
+            cargarDependencias();
+        } else {
 
-            @Override
-            public void run() {
-                final String NAMESPACE = "http://saxsoft/MocrosoftWebService/";
-                final String URL = "http://192.168.1.76/WEBSERVICE/REPORTES.ASMX";
-                final String METHOD_NAME_LOGIN = "ACCESO";
-                final String SOAP_ACTION = "http://saxsoft/MocrosoftWebService/ACCESO";
+            Thread th = new Thread() {
+                String res;
+                EditText usuario = (EditText) findViewById(R.id.user);
+                EditText password = (EditText) findViewById(R.id.pass);
 
-                SoapObject soapLogin = new SoapObject(NAMESPACE, METHOD_NAME_LOGIN);
-                soapLogin.addProperty("USER", usuario.getText().toString());
-                soapLogin.addProperty("PASS", password.getText().toString());
-                soapLogin.addProperty("DEPENDENCIA", dependencia);
-                soapLogin.addProperty("AEJERCICIO", "2016");
+                @Override
+                public void run() {
+                    final String NAMESPACE = "http://saxsoft/MocrosoftWebService/";
+                    final String URL = "http://192.168.1.76/WEBSERVICE/REPORTES.ASMX";
+                    final String METHOD_NAME_LOGIN = "ACCESO";
+                    final String SOAP_ACTION = "http://saxsoft/MocrosoftWebService/ACCESO";
 
-                SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
-                envelope.dotNet = true;
-                envelope.setOutputSoapObject(soapLogin);
+                    SoapObject soapLogin = new SoapObject(NAMESPACE, METHOD_NAME_LOGIN);
+                    soapLogin.addProperty("USER", usuario.getText().toString());
+                    soapLogin.addProperty("PASS", password.getText().toString());
+                    soapLogin.addProperty("DEPENDENCIA", dependencia);
+                    soapLogin.addProperty("AEJERCICIO", "2016");
 
-                HttpTransportSE transporte = new HttpTransportSE(URL);
-                try {
-                    transporte.call(SOAP_ACTION, envelope);
-                    SoapObject body = (SoapObject) envelope.bodyIn;
-                    res = body.getProperty(0).toString();
+                    SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
+                    envelope.dotNet = true;
+                    envelope.setOutputSoapObject(soapLogin);
 
-                } catch (IOException | XmlPullParserException e) {
-                    e.printStackTrace();
-                }
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
+                    HttpTransportSE transporte = new HttpTransportSE(URL);
+                    try {
+                        transporte.call(SOAP_ACTION, envelope);
+                        SoapObject body = (SoapObject) envelope.bodyIn;
+                        res = body.getProperty(0).toString();
 
-                        if (!res.equalsIgnoreCase("INVALIDO")) {
-                            Intent Abrir = new Intent(MainActivity.this, MenuActivity.class);
-                            Abrir.putExtra("Usuario", res);
-                            usuario.setText("");
-                            password.setText("");
-                            startActivity(Abrir);
-                            //Toast.makeText(MainActivity.this,"Sesión Iniciada", Toast.LENGTH_LONG).show();
-                        } else {
-                            Toast.makeText(MainActivity.this, "Usuario Invalido", Toast.LENGTH_LONG).show();
-                        }
-
+                    } catch (IOException | XmlPullParserException e) {
+                        e.printStackTrace();
                     }
-                });
-            }
-        };
-        th.start();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (!res.equalsIgnoreCase("INVALIDO")) {
+                                Intent Abrir = new Intent(MainActivity.this, MenuActivity.class);
+                                Abrir.putExtra("Usuario", res);
+                                usuario.setText("");
+                                password.setText("");
+                                startActivity(Abrir);
+                                //Toast.makeText(MainActivity.this,"Sesión Iniciada", Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(MainActivity.this, "Usuario Invalido", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+                }
+            };
+            th.start();
+        }
     }
 
     private void cargarDependencias() {
@@ -122,7 +128,6 @@ public class MainActivity extends AppCompatActivity {
                 SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
                 envelope.dotNet = true;
                 envelope.setOutputSoapObject(soapLogin);
-
                 HttpTransportSE transporte = new HttpTransportSE(URL);
                 try {
                     transporte.call(SOAP_ACTION, envelope);
@@ -130,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
                     if (envelope.bodyIn instanceof SoapObject) {
                         body = (SoapObject) envelope.getResponse();
                         for (int i = 0; i < body.getPropertyCount(); i++) {
-                            String temp=body.getProperty(i).toString();
+                            String temp = body.getProperty(i).toString();
                             dependencias.add(temp);
                         }
                     }
@@ -141,12 +146,10 @@ public class MainActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-
                         if (dependencias.size() > 0) {
                             ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_spinner_item, dependencias);
                             spinDependencias.setAdapter(adapter);
-                        } else {
-                            Toast.makeText(MainActivity.this, "No hubo respuesta del servidor", Toast.LENGTH_LONG).show();
+                            coneccion = true;
                         }
 
                     }
