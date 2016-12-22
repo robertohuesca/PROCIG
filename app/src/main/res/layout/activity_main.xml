@@ -77,11 +77,10 @@
         <Spinner
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/spinner2"
+            android:id="@+id/spin_login"
             android:layout_weight="0.13"
             android:layout_marginTop="10dp"
             android:layout_gravity="center"
-            android:entries="@array/dependencias"
             />
 
         <Button

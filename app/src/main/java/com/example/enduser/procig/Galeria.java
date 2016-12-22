@@ -9,9 +9,20 @@ import android.os.Handler;
 import android.util.Base64;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.ksoap2.SoapEnvelope;
+import org.ksoap2.SoapFault;
+import org.ksoap2.serialization.SoapObject;
+import org.ksoap2.serialization.SoapSerializationEnvelope;
+import org.ksoap2.transport.HttpTransportSE;
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
+import java.util.ArrayList;
 
 public class Galeria extends AppCompatActivity {
     /* Atributos*/
@@ -63,12 +74,12 @@ public class Galeria extends AppCompatActivity {
     };
 
 
-    private byte[][] imagenesEnBytes;
-    public static int posicion;
-    private ImageView visor;
+    private static int posicion;
     private static TextView paginas;
-    private static String[] imagenesEnString;
     //String a, b, c;
+    private byte[][] imagenesEnBytes;
+    private String reporte, mes;
+    int c = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,18 +98,9 @@ public class Galeria extends AppCompatActivity {
         });
         findViewById(R.id.btn_galeria_sig).setOnTouchListener(mDelayHideTouchListener);
         paginas = (TextView) findViewById(R.id.txv_galeria_paginas);
-        visor = (ImageView) findViewById(R.id.img_view_galeria_reporte);
-
-        visor.setImageBitmap(BitmapFactory.decodeByteArray(getIntent().getByteArrayExtra("0"), 0, getIntent().getByteArrayExtra("0").length));
-
-        /*imagenesEnString= new String[]{getIntent().getStringExtra("0")};
-        //imagenesEnString = getIntent().getStringArrayExtra("reportes");
-        imagenesEnBytes = StringAArrayBytes(imagenesEnString);
-        //imagenesEnString = getIntent().getStringArrayExtra("reportes");
-        imagenSiguiente(null);
-        contador();*/
-
-
+        reporte = getIntent().getStringExtra("reporte");
+        mes = getIntent().getStringExtra("mes");
+        generarReportePrueba(null);
     }
 
     @Override
@@ -146,13 +148,13 @@ public class Galeria extends AppCompatActivity {
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
 
-    /*private byte[][] StringAArrayBytes(String[] arrayString) {
-        byte[][] imagenes = new byte[arrayString.length][];
+    private void StringAArrayBytes(String[] arrayString) {
+        imagenesEnBytes = new byte[arrayString.length][];
         for (int i = 0; i < arrayString.length; i++) {
-            imagenes[i] = Base64.decode(arrayString[i].getBytes(), Base64.DEFAULT);
+            imagenesEnBytes[i] = Base64.decode(arrayString[i].getBytes(), Base64.DEFAULT);
         }
-        return imagenes;
-    }*/
+
+    }
 
     public void imagenSiguiente(View v) {
         byte[] imageAsBytes;
@@ -162,8 +164,7 @@ public class Galeria extends AppCompatActivity {
             posicion = 0;
             imageAsBytes = imagenesEnBytes[posicion];
         }
-
-        visor.setImageBitmap(BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length));
+        mContentView.setImageBitmap(BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length));
         contador();
     }
 
@@ -175,12 +176,62 @@ public class Galeria extends AppCompatActivity {
             posicion = imagenesEnBytes.length - 1;
             imageAsBytes = imagenesEnBytes[posicion];
         }
-        visor.setImageBitmap(BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length));
+        mContentView.setImageBitmap(BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length));
         contador();
     }
 
     private void contador() {
         paginas.setText((posicion + 1) + " de " + imagenesEnBytes.length);
+    }
+
+    public void generarReportePrueba(View v) {
+
+        Thread th = new Thread() {
+            @Override
+            public void run() {
+                String[] imagenesEnString = null;
+                String NAMESPACE = "http://saxsoft/MocrosoftWebService/";
+                String URL = "http://192.168.1.76/WEBSERVICE/REPORTES.ASMX";
+                String METHOD_NAME = "reporte";
+                String SOAP_ACTION = "http://saxsoft/MocrosoftWebService/reporte";
+
+                SoapObject request = new SoapObject(NAMESPACE, METHOD_NAME);
+                request.addProperty("reportex", reporte);
+                request.addProperty("mes", mes);
+
+                SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
+                envelope.dotNet = true;
+                envelope.setOutputSoapObject(request);
+                HttpTransportSE transporte = new HttpTransportSE(URL);
+                try {
+                    transporte.call(SOAP_ACTION, envelope);
+                    if (envelope.bodyIn instanceof SoapFault) {
+                        //Exception
+                    } else {
+                        SoapObject body = (SoapObject) envelope.getResponse();
+                        c = body.getPropertyCount();
+                        imagenesEnString = new String[c];
+                        for (int i = 0; i < imagenesEnString.length; i++) {
+                            imagenesEnString[i] = body.getProperty(i).toString();
+                        }
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (XmlPullParserException e) {
+                    e.printStackTrace();
+                }
+                final String[] finalImagenesEnString = imagenesEnString;
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        StringAArrayBytes(finalImagenesEnString);
+                        imagenSiguiente(null);
+                    }
+                });
+
+            }
+        };
+        th.start();
     }
 
 }

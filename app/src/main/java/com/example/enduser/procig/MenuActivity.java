@@ -42,11 +42,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class MenuActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    private byte[][] arrayReportes;
+    private String pagina1;
     private String reporte, mes;
     private Spinner spinReporte, spinMes;
     private ImageView img;
-    private String a;
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -83,7 +82,6 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
 /*View view=navigationView.inflateHeaderView(R.layout.nav_header_main);*/
         TextView name = (TextView) header.findViewById(R.id.name_user);
         name.setText(nombre);
-        arrayReportes = null;
 
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -174,10 +172,8 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
                         //Exception
                     } else {
                         SoapObject body = (SoapObject) envelope.getResponse();
-                        arrayReportes = new byte[body.getPropertyCount()][];
-                        for (int i = 0; i < arrayReportes.length; i++) {
-                            arrayReportes[i] = Base64.decode(((String) body.getProperty(i)).getBytes(), Base64.DEFAULT);
-                        }
+                        pagina1 = body.getProperty(0).toString();
+
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -187,8 +183,9 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        //byte[] imageAsBytes = Base64.decode(arrayReportes[0].getBytes(), Base64.DEFAULT);
-                        img.setImageBitmap(BitmapFactory.decodeByteArray(arrayReportes[0], 0, arrayReportes[0].length));
+                        byte[] imageAsBytes = Base64.decode(pagina1.getBytes(), Base64.DEFAULT);
+                        img.setImageBitmap(BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length));
+
                     }
                 });
             }
@@ -204,11 +201,8 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
 
     public void abrirGaleria(View v) {
         Intent galeria = new Intent(this, Galeria.class);
-        galeria.putExtra("0",arrayReportes[0]);
-        a= arrayReportes.length+"";
-        galeria.putExtra("1",arrayReportes[1]);
-
-
+        galeria.putExtra("reporte", reporte);
+        galeria.putExtra("mes", mes);
         startActivity(galeria);
     }
 
