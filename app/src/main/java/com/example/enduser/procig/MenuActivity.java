@@ -42,7 +42,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class MenuActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    private String pagina1;
     private String reporte, mes;
     private Spinner spinReporte, spinMes;
     private ImageView img;
@@ -150,6 +149,7 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
 
     public void generarReportePrueba(View v) {
         Thread th = new Thread() {
+            String pagina1;
             @Override
             public void run() {
                 String NAMESPACE = "http://saxsoft/MocrosoftWebService/";
@@ -162,7 +162,7 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
                 request.addProperty("reportex", reporte);
                 request.addProperty("mes", mes);
 
-                SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
+                final SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
                 envelope.dotNet = true;
                 envelope.setOutputSoapObject(request);
                 HttpTransportSE transporte = new HttpTransportSE(URL);
@@ -173,8 +173,7 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
                     } else {
                         SoapObject body = (SoapObject) envelope.getResponse();
                         pagina1 = body.getProperty(0).toString();
-
-                    }
+                        }
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (XmlPullParserException e) {
@@ -185,8 +184,7 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
                     public void run() {
                         byte[] imageAsBytes = Base64.decode(pagina1.getBytes(), Base64.DEFAULT);
                         img.setImageBitmap(BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length));
-
-                    }
+                        }
                 });
             }
         };

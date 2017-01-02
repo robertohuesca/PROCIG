@@ -1,7 +1,6 @@
 package com.example.enduser.procig;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -9,16 +8,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.appindexing.Thing;
 
 
 import org.ksoap2.serialization.SoapObject;
-import org.ksoap2.serialization.SoapPrimitive;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransportSE;
 import org.xmlpull.v1.XmlPullParserException;
@@ -58,11 +51,10 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(MainActivity.this, "No hubo respuesta del servidor", Toast.LENGTH_SHORT).show();
             cargarDependencias();
         } else {
-
             Thread th = new Thread() {
                 String res;
-                EditText usuario = (EditText) findViewById(R.id.user);
-                EditText password = (EditText) findViewById(R.id.pass);
+                EditText txtUsuario = (EditText) findViewById(R.id.user);
+                EditText txtPassword = (EditText) findViewById(R.id.pass);
 
                 @Override
                 public void run() {
@@ -72,8 +64,10 @@ public class MainActivity extends AppCompatActivity {
                     final String SOAP_ACTION = "http://saxsoft/MocrosoftWebService/ACCESO";
 
                     SoapObject soapLogin = new SoapObject(NAMESPACE, METHOD_NAME_LOGIN);
-                    soapLogin.addProperty("USER", usuario.getText().toString());
-                    soapLogin.addProperty("PASS", password.getText().toString());
+                    final String usuario=txtUsuario.getText().toString();
+                    final String pass=txtPassword.getText().toString();
+                    soapLogin.addProperty("USER", usuario);
+                    soapLogin.addProperty("PASS", pass);
                     soapLogin.addProperty("DEPENDENCIA", dependencia);
                     soapLogin.addProperty("AEJERCICIO", "2016");
 
@@ -96,8 +90,8 @@ public class MainActivity extends AppCompatActivity {
                             if (!res.equalsIgnoreCase("INVALIDO")) {
                                 Intent Abrir = new Intent(MainActivity.this, MenuActivity.class);
                                 Abrir.putExtra("Usuario", res);
-                                usuario.setText("");
-                                password.setText("");
+                                txtUsuario.setText("");
+                                txtPassword.setText("");
                                 startActivity(Abrir);
                                 //Toast.makeText(MainActivity.this,"Sesión Iniciada", Toast.LENGTH_LONG).show();
                             } else {
@@ -139,7 +133,6 @@ public class MainActivity extends AppCompatActivity {
                             dependencias.add(temp);
                         }
                     }
-
                 } catch (IOException | XmlPullParserException e) {
                     e.printStackTrace();
                 }
@@ -151,7 +144,6 @@ public class MainActivity extends AppCompatActivity {
                             spinDependencias.setAdapter(adapter);
                             coneccion = true;
                         }
-
                     }
                 });
             }
