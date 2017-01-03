@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private String dependencia;
     private boolean coneccion;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,59 +52,69 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(MainActivity.this, "No hubo respuesta del servidor", Toast.LENGTH_SHORT).show();
             cargarDependencias();
         } else {
-            Thread th = new Thread() {
-                String res;
-                EditText txtUsuario = (EditText) findViewById(R.id.user);
-                EditText txtPassword = (EditText) findViewById(R.id.pass);
+            EditText txtUsuario = (EditText) findViewById(R.id.user);
+            EditText txtPassword = (EditText) findViewById(R.id.pass);
+            if (txtUsuario.getText().toString().equals("")) {
+                Toast.makeText(MainActivity.this, "Debe escribir un nombre de usuario", Toast.LENGTH_SHORT).show();
+            } else if (txtPassword.getText().toString().equals("")) {
+                Toast.makeText(MainActivity.this, "Debe escribir una contraseña", Toast.LENGTH_SHORT).show();
+            } else {
+                Thread th = new Thread() {
+                    String res = null;
+                    int count = 0;
+                    EditText txtUsuario = (EditText) findViewById(R.id.user);
+                    EditText txtPassword = (EditText) findViewById(R.id.pass);
 
-                @Override
-                public void run() {
-                    final String NAMESPACE = "http://saxsoft/MocrosoftWebService/";
-                    final String URL = "http://192.168.1.76/WEBSERVICE/REPORTES.ASMX";
-                    final String METHOD_NAME_LOGIN = "ACCESO";
-                    final String SOAP_ACTION = "http://saxsoft/MocrosoftWebService/ACCESO";
+                    @Override
+                    public void run() {
+                        final String NAMESPACE = "http://saxsoft/MocrosoftWebService/";
+                        final String URL = "http://192.168.1.76/WEBSERVICE/REPORTES.ASMX";
+                        final String METHOD_NAME_LOGIN = "ACCESO";
+                        final String SOAP_ACTION = "http://saxsoft/MocrosoftWebService/ACCESO";
 
-                    SoapObject soapLogin = new SoapObject(NAMESPACE, METHOD_NAME_LOGIN);
-                    final String usuario=txtUsuario.getText().toString();
-                    final String pass=txtPassword.getText().toString();
-                    soapLogin.addProperty("USER", usuario);
-                    soapLogin.addProperty("PASS", pass);
-                    soapLogin.addProperty("DEPENDENCIA", dependencia);
-                    soapLogin.addProperty("AEJERCICIO", "2016");
+                        SoapObject soapLogin = new SoapObject(NAMESPACE, METHOD_NAME_LOGIN);
 
-                    SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
-                    envelope.dotNet = true;
-                    envelope.setOutputSoapObject(soapLogin);
+                        soapLogin.addProperty("USER", txtUsuario.getText().toString());
+                        soapLogin.addProperty("PASS", txtPassword.getText().toString());
+                        soapLogin.addProperty("DEPENDENCIA", dependencia);
+                        soapLogin.addProperty("AEJERCICIO", "2016");
 
-                    HttpTransportSE transporte = new HttpTransportSE(URL);
-                    try {
-                        transporte.call(SOAP_ACTION, envelope);
-                        SoapObject body = (SoapObject) envelope.bodyIn;
-                        res = body.getProperty(0).toString();
+                        SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
+                        envelope.dotNet = true;
+                        envelope.setOutputSoapObject(soapLogin);
+                        HttpTransportSE transporte = new HttpTransportSE(URL);
+                       try {
 
-                    } catch (IOException | XmlPullParserException e) {
-                        e.printStackTrace();
-                    }
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (!res.equalsIgnoreCase("INVALIDO")) {
-                                Intent Abrir = new Intent(MainActivity.this, MenuActivity.class);
-                                Abrir.putExtra("Usuario", res);
-                                txtUsuario.setText("");
-                                txtPassword.setText("");
-                                startActivity(Abrir);
-                                //Toast.makeText(MainActivity.this,"Sesión Iniciada", Toast.LENGTH_LONG).show();
-                            } else {
-                                Toast.makeText(MainActivity.this, "Usuario Invalido", Toast.LENGTH_LONG).show();
-                            }
+                            transporte.call(SOAP_ACTION, envelope);
+                            SoapObject body = (SoapObject) envelope.bodyIn;
+                            count = body.getPropertyCount();
+                            res = body.getProperty(0).toString();
+                        } catch (IOException | XmlPullParserException e) {
+                            e.printStackTrace();
                         }
-                    });
-                }
-            };
-            th.start();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (!res.equalsIgnoreCase("INVALIDO")) {
+                                    Intent Abrir = new Intent(MainActivity.this, MenuActivity.class);
+                                    Abrir.putExtra("Usuario", res);
+                                    txtUsuario.setText("");
+                                    txtPassword.setText("");
+                                    startActivity(Abrir);
+                                    //Toast.makeText(MainActivity.this,"Sesión Iniciada", Toast.LENGTH_LONG).show();
+                                } else {
+                                    Toast.makeText(MainActivity.this, "Usuario Invalido", Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        });
+                    }
+                };
+                th.start();
+            }
         }
+
     }
+
 
     private void cargarDependencias() {
         Thread th = new Thread() {
