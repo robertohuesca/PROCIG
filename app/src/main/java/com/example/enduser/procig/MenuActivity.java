@@ -41,10 +41,14 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import uk.co.senab.photoview.PhotoViewAttacher;
+
+
 public class MenuActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private String reporte, mes;
     private Spinner spinReporte, spinMes;
     private ImageView img;
+    PhotoViewAttacher mAttacher;
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -85,6 +89,7 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+
     }
 
     @Override
@@ -184,6 +189,7 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
                     public void run() {
                         byte[] imageAsBytes = Base64.decode(pagina1.getBytes(), Base64.DEFAULT);
                         img.setImageBitmap(BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length));
+                        mAttacher = new PhotoViewAttacher(img);
                         }
                 });
             }
@@ -198,10 +204,15 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void abrirGaleria(View v) {
-        Intent galeria = new Intent(this, Galeria.class);
+        /*Intent galeria = new Intent(this, Galeria.class);
         galeria.putExtra("reporte", reporte);
         galeria.putExtra("mes", mes);
-        startActivity(galeria);
+        startActivity(galeria);*/
+
+
+        // Attach a PhotoViewAttacher, which takes care of all of the zooming functionality.
+        // (not needed unless you are going to change the drawable later)
+
     }
 
     public void obtenerDatos() {
