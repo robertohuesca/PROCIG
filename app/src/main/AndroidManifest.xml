@@ -37,7 +37,10 @@
             android:name=".Galeria"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_galeria"
-            android:theme="@style/FullscreenTheme"></activity>
+            android:theme="@style/FullscreenTheme" />
+        <activity android:name=".Sax"
+            android:parentActivityName="com.example.enduser.procig.Sax">
+        </activity>
     </application>
 
 </manifest>

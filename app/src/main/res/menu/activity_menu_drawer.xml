@@ -23,13 +23,14 @@
     <item android:title="Opciones">
         <menu>
             <item
+                android:id="@+id/Conocenos"
+                android:icon="@drawable/ic_menu_send"
+                android:title="Conocenos" />
+            <item
                 android:id="@+id/cerrar_sesion"
                 android:icon="@drawable/salir"
                 android:title="Cerrar Sesión" />
-            <!--item
-                android:id="@+id/nav_send"
-                android:icon="@drawable/ic_menu_send"
-                android:title="Volver a cerrar sesión" /-->
+
         </menu>
     </item>
 

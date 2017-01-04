@@ -141,8 +141,11 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
             fm.beginTransaction().replace(R.id.content_menu, new ReportesPresupuestalesFragment()).commit();
         } else if (id == R.id.cerrar_sesion) {
             cerrarSesion();
-        } /*else if (id == R.id.nav_manage) {
-
+        } else if (id == R.id.Conocenos) {
+            Intent Abrir = new Intent(this, Sax.class);
+            startActivity(Abrir);
+        }
+/*
         } else if (id == R.id.nav_share) {
             onBackPressed();
         } else if (id == R.id.nav_send) {
