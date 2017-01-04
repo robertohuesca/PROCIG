@@ -267,7 +267,6 @@ public class Galeria extends AppCompatActivity {
             if (e2.getX() > e1.getX()) {
 
             } else if(e2.getX() < e1.getX()){
-
             }
 
             return true;
