@@ -265,7 +265,7 @@ public class Galeria extends AppCompatActivity {
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
 
             if (e2.getX() > e1.getX()) {
-                Toast.makeText(Galeria.this,"primero", Toast.LENGTH_SHORT).show();
+
             } else if(e2.getX() < e1.getX()){
 
             }
