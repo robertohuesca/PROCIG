@@ -2,11 +2,13 @@ package com.example.enduser.procig;
 
 import android.annotation.SuppressLint;
 import android.graphics.BitmapFactory;
+import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Base64;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -23,6 +25,8 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 import java.util.ArrayList;
+
+import uk.co.senab.photoview.PhotoViewAttacher;
 
 public class Galeria extends AppCompatActivity {
     /* Atributos*/
@@ -76,9 +80,11 @@ public class Galeria extends AppCompatActivity {
 
     private static int posicion;
     private static TextView paginas;
-    //String a, b, c;
-    private byte[][] imagenesEnBytes;
+    private PhotoViewAttacher mAttacher;
+    private GestureDetectorCompat gestureObject;
+    String[] imagenesEnString;
     private String reporte, mes;
+    volatile boolean avanzar;
     int c = 0;
 
     @Override
@@ -90,17 +96,12 @@ public class Galeria extends AppCompatActivity {
         mVisible = true;
         mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = (ImageView) findViewById(R.id.img_view_galeria_reporte);
-        mContentView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                toggle();
-            }
-        });
         findViewById(R.id.btn_galeria_sig).setOnTouchListener(mDelayHideTouchListener);
         paginas = (TextView) findViewById(R.id.txv_galeria_paginas);
         reporte = getIntent().getStringExtra("reporte");
         mes = getIntent().getStringExtra("mes");
         generarReportePrueba(null);
+        gestureObject = new GestureDetectorCompat(mContentView.getContext(), new LearnGesture());
     }
 
     @Override
@@ -109,7 +110,7 @@ public class Galeria extends AppCompatActivity {
         delayedHide(100);
     }
 
-    private void toggle() {
+    public void toggle(View view) {
         if (mVisible) {
             hide();
         } else {
@@ -148,48 +149,65 @@ public class Galeria extends AppCompatActivity {
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
 
-    private void StringAArrayBytes(String[] arrayString) {
-        imagenesEnBytes = new byte[arrayString.length][];
-        for (int i = 0; i < arrayString.length; i++) {
-            imagenesEnBytes[i] = Base64.decode(arrayString[i].getBytes(), Base64.DEFAULT);
+    /*private void StringAArrayBytes(String[] arrayString) {
+            imagenesEnBytes = new byte[arrayString.length][];
+            for (int i = 0; i < arrayString.length; i++) {
+                imagenesEnBytes[i] = Base64.decode(arrayString[i].getBytes(), Base64.DEFAULT);
+            }
+
         }
-
-    }
-
+    */
     public void imagenSiguiente(View v) {
-        byte[] imageAsBytes;
-        if (posicion < imagenesEnBytes.length - 1) {
-            imageAsBytes = imagenesEnBytes[++posicion];
-        } else {
-            posicion = 0;
-            imageAsBytes = imagenesEnBytes[posicion];
+        if (avanzar) {
+            Thread ant = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    byte[] imageAsBytes;
+                    if (posicion < imagenesEnString.length - 1) {
+                        imageAsBytes = Base64.decode(imagenesEnString[++posicion].getBytes(), Base64.DEFAULT);
+                    } else {
+                        posicion = 0;
+                        imageAsBytes = Base64.decode(imagenesEnString[posicion].getBytes(), Base64.DEFAULT);
+                    }
+                    mContentView.setImageBitmap(BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length));
+                    contador();
+                    mAttacher = new PhotoViewAttacher(mContentView);
+                }
+            });
+            ant.run();
         }
-        mContentView.setImageBitmap(BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length));
-        contador();
     }
 
     public void ImagenPrevia(View v) {
-        byte[] imageAsBytes;
-        if (posicion > 0) {
-            imageAsBytes = imagenesEnBytes[--posicion];
-        } else {
-            posicion = imagenesEnBytes.length - 1;
-            imageAsBytes = imagenesEnBytes[posicion];
+        if (avanzar) {
+            Thread sig = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    byte[] imageAsBytes;
+                    if (posicion > 0) {
+                        imageAsBytes = Base64.decode(imagenesEnString[--posicion].getBytes(), Base64.DEFAULT);
+                    } else {
+                        posicion = imagenesEnString.length - 1;
+                        imageAsBytes = Base64.decode(imagenesEnString[posicion].getBytes(), Base64.DEFAULT);
+                    }
+                    mContentView.setImageBitmap(BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length));
+                    contador();
+                    mAttacher = new PhotoViewAttacher(mContentView);
+                                    }
+            });
+            sig.run();
         }
-        mContentView.setImageBitmap(BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length));
-        contador();
     }
 
     private void contador() {
-        paginas.setText((posicion + 1) + " de " + imagenesEnBytes.length);
+        paginas.setText((posicion + 1) + " de " + imagenesEnString.length);
     }
 
     public void generarReportePrueba(View v) {
-
         Thread th = new Thread() {
             @Override
             public void run() {
-                String[] imagenesEnString = null;
+
                 String NAMESPACE = "http://saxsoft/MocrosoftWebService/";
                 String URL = "http://192.168.1.76/WEBSERVICE/REPORTES.ASMX";
                 String METHOD_NAME = "reporte";
@@ -214,17 +232,17 @@ public class Galeria extends AppCompatActivity {
                         for (int i = 0; i < imagenesEnString.length; i++) {
                             imagenesEnString[i] = body.getProperty(i).toString();
                         }
+                        avanzar = true;
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (XmlPullParserException e) {
                     e.printStackTrace();
                 }
-                final String[] finalImagenesEnString = imagenesEnString;
+
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        StringAArrayBytes(finalImagenesEnString);
                         imagenSiguiente(null);
                     }
                 });
@@ -234,4 +252,25 @@ public class Galeria extends AppCompatActivity {
         th.start();
     }
 
+
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        this.gestureObject.onTouchEvent(event);
+        return super.onTouchEvent(event);
+    }
+
+    private class LearnGesture extends GestureDetector.SimpleOnGestureListener {
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+
+            if (e2.getX() > e1.getX()) {
+                Toast.makeText(Galeria.this,"primero", Toast.LENGTH_SHORT).show();
+            } else if(e2.getX() < e1.getX()){
+
+            }
+
+            return true;
+        }
+    }
 }

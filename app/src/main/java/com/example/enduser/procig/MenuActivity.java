@@ -8,8 +8,11 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.view.GestureDetectorCompat;
 import android.util.Base64;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -89,7 +92,6 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
-
     }
 
     @Override
@@ -113,7 +115,7 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            return true;
+            abrirGaleria();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -203,11 +205,11 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
         startActivity(intent);
     }
 
-    public void abrirGaleria(View v) {
-        /*Intent galeria = new Intent(this, Galeria.class);
+    public void abrirGaleria() {
+        Intent galeria = new Intent(this, Galeria.class);
         galeria.putExtra("reporte", reporte);
         galeria.putExtra("mes", mes);
-        startActivity(galeria);*/
+        startActivity(galeria);
 
 
         // Attach a PhotoViewAttacher, which takes care of all of the zooming functionality.
@@ -269,4 +271,7 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
         AppIndex.AppIndexApi.end(client, getIndexApiAction());
         client.disconnect();
     }
+
+
+
 }
