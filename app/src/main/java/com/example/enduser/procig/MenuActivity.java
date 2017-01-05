@@ -2,13 +2,19 @@ package com.example.enduser.procig;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GestureDetectorCompat;
+import android.text.Html;
 import android.util.Base64;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -29,6 +35,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.appindexing.Thing;
@@ -41,8 +48,13 @@ import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransportSE;
 import org.xmlpull.v1.XmlPullParserException;
 
+import java.io.ByteArrayOutputStream;
+
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Random;
 
 import uk.co.senab.photoview.PhotoViewAttacher;
 
@@ -53,28 +65,86 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
     private ImageView img;
     PhotoViewAttacher mAttacher;
 
+
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
     private GoogleApiClient client;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+      com.getbase.floatingactionbutton.FloatingActionButton fab = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.accion_compartir);
+       fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                ImageView ivdisplayphoto;
+                ivdisplayphoto = (ImageView)findViewById(R.id.img_view_reporte_presupuestal);
+                BitmapDrawable bitmapDrawable = (BitmapDrawable)ivdisplayphoto.getDrawable();
+                Bitmap bitmap = bitmapDrawable.getBitmap();
+
+                // Save this bitmap to a file.
+                File cache = getApplicationContext().getExternalCacheDir();
+                File sharefile = new File(cache, "Reporte.png");
+                try {
+                    FileOutputStream out = new FileOutputStream(sharefile);
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+                    out.flush();
+                    out.close();
+                } catch (IOException e) {
+
+                }
+
+                // Now send it out to share
+                Intent share = new Intent(android.content.Intent.ACTION_SEND);
+                share.setType("image/*");
+                share.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://" + sharefile));
+                try {
+                    startActivity(Intent.createChooser(share, "Share Report"));
+                } catch (Exception e) {
+
+                }
             }
         });
+
+        com.getbase.floatingactionbutton.FloatingActionButton fab2 = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.accion_guardar);
+        fab2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ImageView ivdisplayphoto2;
+                ivdisplayphoto2 = (ImageView)findViewById(R.id.img_view_reporte_presupuestal);
+                ivdisplayphoto2.setDrawingCacheEnabled(true);
+                Bitmap bitmap = ivdisplayphoto2.getDrawingCache();
+
+                String root = Environment.getExternalStorageDirectory().toString();
+                File newDir = new File(root + "/saved_images");
+                newDir.mkdirs();
+                Random gen = new Random();
+                int n = 10000;
+                n = gen.nextInt(n);
+                String fotoname = "photo-"+ n +".jpg";
+                File file = new File (newDir, fotoname);
+                if (file.exists ()) file.delete ();
+                try {
+                    FileOutputStream out = new FileOutputStream(file);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+                    out.flush();
+                    out.close();
+                    Toast.makeText(getApplicationContext(), "Guardado con éxito", Toast.LENGTH_SHORT ).show();
+
+                } catch (Exception e) {
+
+                }
+            }
+        });
+
+
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
