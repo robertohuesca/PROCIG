@@ -15,15 +15,15 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:keepScreenOn="true"
-        android:contentDescription="Reporte presupuestal"
         android:background="@color/common_google_signin_btn_text_light_default" />
 
     <FrameLayout
         android:layout_gravity="bottom"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
-        android:id="@+id/frameBotonesGaleria">
+        android:id="@+id/frameBotonesGaleria"
+        android:onClick="toggle">
 
         <LinearLayout
             android:id="@+id/fullscreen_content_controls"

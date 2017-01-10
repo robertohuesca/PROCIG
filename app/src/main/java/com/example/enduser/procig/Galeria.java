@@ -12,7 +12,6 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -80,9 +79,9 @@ public class Galeria extends AppCompatActivity {
 
 
     private static int posicion;
-    private  TextView paginas;
+    private static TextView paginas;
     private PhotoViewAttacher mAttacher;
-    GestureDetectorCompat gestureObject;
+    private GestureDetectorCompat gestureObject;
     String[] imagenesEnString;
     private String reporte, mes;
     volatile boolean avanzar;
@@ -97,44 +96,12 @@ public class Galeria extends AppCompatActivity {
         mVisible = true;
         mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = (ImageView) findViewById(R.id.img_view_galeria_reporte);
-        //findViewById(R.id.btn_galeria_sig).setOnTouchListener(mDelayHideTouchListener);
+        findViewById(R.id.btn_galeria_sig).setOnTouchListener(mDelayHideTouchListener);
         paginas = (TextView) findViewById(R.id.txv_galeria_paginas);
         reporte = getIntent().getStringExtra("reporte");
         mes = getIntent().getStringExtra("mes");
         generarReportePrueba(null);
-        setTitle(mes);
-        gestureObject = new GestureDetectorCompat(this, new GestureDetector.SimpleOnGestureListener() {
-            @Override
-            public void onLongPress(MotionEvent e) {
-                if(e.getDownTime()>500) {
-                    toggle(null);
-                }
-            }
-
-            @Override
-            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-                if (mAttacher.getScale() == 1) {
-                    if (e1.getX() > e2.getX()+30) {
-                        imagenSiguiente(null);
-                    } else if (e1.getX() < e2.getX()-30) {
-                        ImagenPrevia(null);
-                    }
-                }
-                return false;
-
-            }
-        });
-        FrameLayout botones = (FrameLayout) findViewById(R.id.frameBotonesGaleria);
-        botones.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                gestureObject.onTouchEvent(motionEvent);
-                mAttacher.onTouch(mAttacher.getImageView(),motionEvent);
-                return true;
-            }
-        });
-
-
+        gestureObject = new GestureDetectorCompat(mContentView.getContext(), new LearnGesture());
     }
 
     @Override
@@ -182,6 +149,14 @@ public class Galeria extends AppCompatActivity {
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
 
+    /*private void StringAArrayBytes(String[] arrayString) {
+            imagenesEnBytes = new byte[arrayString.length][];
+            for (int i = 0; i < arrayString.length; i++) {
+                imagenesEnBytes[i] = Base64.decode(arrayString[i].getBytes(), Base64.DEFAULT);
+            }
+
+        }
+    */
     public void imagenSiguiente(View v) {
         if (avanzar) {
             Thread ant = new Thread(new Runnable() {
@@ -218,7 +193,7 @@ public class Galeria extends AppCompatActivity {
                     mContentView.setImageBitmap(BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length));
                     contador();
                     mAttacher = new PhotoViewAttacher(mContentView);
-                }
+                                    }
             });
             sig.run();
         }
@@ -248,7 +223,9 @@ public class Galeria extends AppCompatActivity {
                 HttpTransportSE transporte = new HttpTransportSE(URL);
                 try {
                     transporte.call(SOAP_ACTION, envelope);
-                    if (!(envelope.bodyIn instanceof SoapFault)) {
+                    if (envelope.bodyIn instanceof SoapFault) {
+                        //Exception
+                    } else {
                         SoapObject body = (SoapObject) envelope.getResponse();
                         c = body.getPropertyCount();
                         imagenesEnString = new String[c];
@@ -257,7 +234,9 @@ public class Galeria extends AppCompatActivity {
                         }
                         avanzar = true;
                     }
-                } catch (IOException | XmlPullParserException e) {
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (XmlPullParserException e) {
                     e.printStackTrace();
                 }
 
@@ -273,4 +252,24 @@ public class Galeria extends AppCompatActivity {
         th.start();
     }
 
+
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        this.gestureObject.onTouchEvent(event);
+        return super.onTouchEvent(event);
+    }
+
+    private class LearnGesture extends GestureDetector.SimpleOnGestureListener {
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+
+            if (e2.getX() > e1.getX()) {
+
+            } else if(e2.getX() < e1.getX()){
+            }
+
+            return true;
+        }
+    }
 }
