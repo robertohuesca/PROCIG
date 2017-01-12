@@ -101,7 +101,7 @@ public class Galeria extends AppCompatActivity {
         paginas = (TextView) findViewById(R.id.txv_galeria_paginas);
         reporte = getIntent().getStringExtra("reporte");
         mes = getIntent().getStringExtra("mes");
-        generarReportePrueba(null);
+
         setTitle(mes);
         gestureObject = new GestureDetectorCompat(this, new GestureDetector.SimpleOnGestureListener() {
             @Override
@@ -128,12 +128,14 @@ public class Galeria extends AppCompatActivity {
         botones.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                gestureObject.onTouchEvent(motionEvent);
-                mAttacher.onTouch(mAttacher.getImageView(), motionEvent);
+                if (avanzar) {
+                    gestureObject.onTouchEvent(motionEvent);
+                    mAttacher.onTouch(mAttacher.getImageView(), motionEvent);
+                }
                 return true;
             }
         });
-
+        generarReportePrueba(null);
 
     }
 

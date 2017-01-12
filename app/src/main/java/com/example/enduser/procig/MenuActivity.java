@@ -65,8 +65,8 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
     private ImageView img;
     private boolean abrir;
     PhotoViewAttacher mAttacher;
-    private String [] paginas;
-    private static final File dirReportes= new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath());
+    private String[] paginas;
+    private static final File dirReportes = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath()+"/reportes Procig");
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -87,14 +87,14 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               compartirFloat();
+                compartirFloat();
             }
         });
         com.getbase.floatingactionbutton.FloatingActionButton fab2 = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.accion_guardar);
         fab2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               guardarFloat();
+                guardarFloat();
             }
         });
 
@@ -207,10 +207,10 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
                         Toast.makeText(MenuActivity.this, "No hubo respuesta", Toast.LENGTH_SHORT).show();
                     } else {
                         SoapObject body = (SoapObject) envelope.getResponse();
-                        int c= body.getPropertyCount();
-                        paginas= new String[c];
-                        for(int i =0;i<paginas.length;i++){
-                            paginas[i]=body.getProperty(i).toString();
+                        int c = body.getPropertyCount();
+                        paginas = new String[c];
+                        for (int i = 0; i < paginas.length; i++) {
+                            paginas[i] = body.getProperty(i).toString();
                         }
                     }
                 } catch (IOException | XmlPullParserException e) {
@@ -222,7 +222,7 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
                         byte[] imageAsBytes = Base64.decode(paginas[0].getBytes(), Base64.DEFAULT);
                         img.setImageBitmap(BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length));
                         mAttacher = new PhotoViewAttacher(img);
-                        abrir=true;
+                        abrir = true;
                     }
                 });
             }
@@ -237,7 +237,7 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void abrirGaleria() {
-        if(abrir) {
+        if (abrir) {
             Intent galeria = new Intent(this, Galeria.class);
             galeria.putExtra("reporte", reporte);
             galeria.putExtra("mes", mes);
@@ -256,7 +256,6 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
                 spinReporte = (Spinner) findViewById(R.id.spin_reporte_presupuestal);
                 spinMes = (Spinner) findViewById(R.id.spin_reporte__presupuestal_mes);
                 img = (ImageView) findViewById(R.id.img_view_reporte_presupuestal);
-
                 break;
 
         }
@@ -301,111 +300,68 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
     }
 
 
-
     final void compartirFloat() {
         if (abrir) {
-        ImageView ivdisplayphoto;
-        ivdisplayphoto = (ImageView) findViewById(R.id.img_view_reporte_presupuestal);
-        BitmapDrawable bitmapDrawable = (BitmapDrawable) ivdisplayphoto.getDrawable();
-        Bitmap bitmap = bitmapDrawable.getBitmap();
+            ImageView ivdisplayphoto;
+            ivdisplayphoto = (ImageView) findViewById(R.id.img_view_reporte_presupuestal);
+            BitmapDrawable bitmapDrawable = (BitmapDrawable) ivdisplayphoto.getDrawable();
+            Bitmap bitmap = bitmapDrawable.getBitmap();
 
-        // Save this bitmap to a file.
-        File cache = getApplicationContext().getExternalCacheDir();
-        File sharefile = new File(cache, "Reporte.png");
-        try {
-            FileOutputStream out = new FileOutputStream(sharefile);
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
-            out.flush();
-            out.close();
-        } catch (IOException e) {
-            Toast.makeText(this, "Error al compartir", Toast.LENGTH_SHORT).show();
+            // Save this bitmap to a file.
+            File cache = getApplicationContext().getExternalCacheDir();
+            File sharefile = new File(cache, "Reporte.png");
+            try {
+                FileOutputStream out = new FileOutputStream(sharefile);
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+                out.flush();
+                out.close();
+            } catch (IOException e) {
+                Toast.makeText(this, "Error al compartir", Toast.LENGTH_SHORT).show();
+            }
+
+            // Now send it out to share
+            Intent share = new Intent(android.content.Intent.ACTION_SEND);
+            share.setType("image/*");
+            share.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://" + sharefile));
+            try {
+                startActivity(Intent.createChooser(share, "Share Report"));
+            } catch (Exception e) {
+                Toast.makeText(this, "Error al guardar", Toast.LENGTH_SHORT).show();
+            }
         }
-
-        // Now send it out to share
-        Intent share = new Intent(android.content.Intent.ACTION_SEND);
-        share.setType("image/*");
-        share.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://" + sharefile));
-        try {
-            startActivity(Intent.createChooser(share, "Share Report"));
-        } catch (Exception e) {
-            Toast.makeText(this, "Error al guardar", Toast.LENGTH_SHORT).show();
-        }}
     }
 
     final void guardarFloat() {
         if (abrir) {
             if (!dirReportes.exists()) {
                 dirReportes.mkdir();
-            }
-            ///
-            if (dirReportes.exists()) {
-                Toast.makeText(getApplicationContext(), dirReportes.toString(), Toast.LENGTH_LONG).show();
-            } else {
-                Toast.makeText(getApplicationContext(), "o1", Toast.LENGTH_LONG).show();
-            }
-            if (dirReportes.isDirectory()) {
-                Toast.makeText(getApplicationContext(), "dir", Toast.LENGTH_LONG).show();
-            } else {
-                Toast.makeText(getApplicationContext(), "o2", Toast.LENGTH_LONG).show();
-            }
-///
-            Thread guardar = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    for (int i = 0; i < paginas.length; i++) {
-                        byte[] imageAsBytes = Base64.decode(paginas[i].getBytes(), Base64.DEFAULT);
-                        Bitmap bitmap = BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length);
-                        String fotoname = i + "reporte " + reporte + "-" + mes + ".jpg";
-                        File file = new File(dirReportes, fotoname);
-                        if (file.exists()) file.delete();
-                        try {
-                            FileOutputStream out = new FileOutputStream(file);
-                            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
-                            out.flush();
-                            out.close();
-                        } catch (Exception e) {
-                            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-
-                        }
-
-                    }
-
                 }
-            });
-            guardar.run();
-        }
-                /*
-                if (abrir) {
-                    //-ImageView ivdisplayphoto2;
-                    //-ivdisplayphoto2 = (ImageView) findViewById(R.id.img_view_reporte_presupuestal);
-                    byte[] imageAsBytes = Base64.decode(pagina1.getBytes(), Base64.DEFAULT);
-                    Bitmap bitmap = BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length);
-                    //-ivdisplayphoto2.setDrawingCacheEnabled(true);
-                    //-Bitmap bitmap = ivdisplayphoto2.getDrawingCache();
-                    //String root = Environment.getExternalStorageDirectory();
-
-                    //newDir.mkdirs();
-                    Random gen = new Random();
-                    int n = 10000;
-                    n = gen.nextInt(n);
-                    String fotoname = "photo-" + n + ".jpg";
-                    File file = new File(dirReportes, fotoname);
-                    if (file.exists()) file.delete();
-                    try {
-                        FileOutputStream out = new FileOutputStream(file);
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
-                        out.flush();
-                        out.close();
-                        Toast.makeText(getApplicationContext(), "Guardado con éxito", Toast.LENGTH_SHORT).show();
-                        //ver imagenes en galeria
-                        sendBroadcast(new Intent(
-                                Intent.ACTION_MEDIA_MOUNTED,
-                                Uri.parse("file://" + Environment.getExternalStorageDirectory())));
-
-                    } catch (Exception e) {
-
+            if(dirReportes.exists()){
+                Thread guardar = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (int i = 0; i < paginas.length; i++) {
+                            byte[] imageAsBytes = Base64.decode(paginas[i].getBytes(), Base64.DEFAULT);
+                            Bitmap bitmap = BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length);
+                            String fotoname = "pag "+i + " - reporte " + reporte + "-" + mes + ".jpg";
+                            File file = new File(dirReportes, fotoname);
+                            if (file.exists()) file.delete();
+                            try {
+                                FileOutputStream out = new FileOutputStream(file);
+                                bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+                                out.flush();
+                                out.close();
+                            } catch (Exception e) {
+                                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        }
                     }
-                }*/
+                });
+                guardar.run();
+            } else{
+                Toast.makeText(this, "No se pudo acceder a la carpeta DCIM", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
 }
