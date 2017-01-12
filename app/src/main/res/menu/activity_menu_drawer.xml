@@ -3,14 +3,14 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/reportes_presupuestales"
+            android:id="@+id/reportes_financieros"
             android:icon="@drawable/reporte_presupuestal"
-            android:title="Reportes Presupuestales" />
-        <item
+            android:title="Reportes Financieros" />
+        <!--item
             android:id="@+id/reportes_contables"
             android:icon="@drawable/reporte_contable"
             android:title="Reportes Contables" />
-        <!--item
+        <item
             android:id="@+id/nav_slideshow"
             android:icon="@drawable/ic_menu_slideshow"
             android:title="Slideshow" />

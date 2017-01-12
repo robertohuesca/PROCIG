@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void LoginOnClick(View v) {
-        if (coneccion == false) {
+        if (!coneccion ) {
             Toast.makeText(MainActivity.this, "No hubo respuesta del servidor", Toast.LENGTH_SHORT).show();
             cargarDependencias();
         } else {
@@ -119,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
     private void cargarDependencias() {
         Thread th = new Thread() {
             Spinner spinDependencias = (Spinner) findViewById(R.id.spin_login);
-            ArrayList<String> dependencias = new ArrayList<String>();
+            ArrayList<String> dependencias = new ArrayList<>();
 
             @Override
             public void run() {
@@ -151,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         if (dependencias.size() > 0) {
-                            ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_spinner_item, dependencias);
+                            ArrayAdapter<String> adapter = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_spinner_item, dependencias);
                             spinDependencias.setAdapter(adapter);
                             coneccion = true;
                         }
