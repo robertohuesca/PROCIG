@@ -1,6 +1,7 @@
 package com.example.enduser.procig;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -71,6 +72,7 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
     private boolean abrir;
     PhotoViewAttacher mAttacher;
     private String[] paginas;
+    ProgressDialog progressDialog;
     FragmentManager fm = getSupportFragmentManager();
     private final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 1;
     private static final File dirReportes = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath() + "/reportes Procig");
@@ -122,6 +124,7 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
         setTitle("Inicio");
         fm.beginTransaction().replace(R.id.content_menu, new Inicio_Fragment()).commit();
+
     }
 
     @Override
@@ -173,9 +176,12 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void generarReportePrueba(View v) {
+        progressDialog= ProgressDialog.show(MenuActivity.this, "","Cargando...");
         Thread th = new Thread() {
             @Override
             public void run() {
+
+
                 String NAMESPACE = "http://saxsoft/MocrosoftWebService/";
                 String URL = "http://192.168.1.76/WEBSERVICE/REPORTES.ASMX";
                 String METHOD_NAME = "reporte";
@@ -208,10 +214,13 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+
                         byte[] imageAsBytes = Base64.decode(paginas[0].getBytes(), Base64.DEFAULT);
                         img.setImageBitmap(BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length));
                         mAttacher = new PhotoViewAttacher(img);
                         abrir = true;
+                        progressDialog.dismiss();
+
                     }
                 });
             }

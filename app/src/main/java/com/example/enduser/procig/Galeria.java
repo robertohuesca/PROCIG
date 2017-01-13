@@ -1,6 +1,7 @@
 package com.example.enduser.procig;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.graphics.BitmapFactory;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.ActionBar;
@@ -36,6 +37,7 @@ public class Galeria extends AppCompatActivity {
     private static final int UI_ANIMATION_DELAY = 300;
     private final Handler mHideHandler = new Handler();
     private ImageView mContentView;
+    ProgressDialog progressDialog;
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
         @Override
@@ -233,6 +235,7 @@ public class Galeria extends AppCompatActivity {
     }
 
     public void generarReportePrueba(View v) {
+        progressDialog= ProgressDialog.show(Galeria.this, "","Cargando...");
         Thread th = new Thread() {
             @Override
             public void run() {
@@ -269,6 +272,7 @@ public class Galeria extends AppCompatActivity {
                     @Override
                     public void run() {
                         imagenSiguiente(null);
+                        progressDialog.dismiss();
                     }
                 });
 
