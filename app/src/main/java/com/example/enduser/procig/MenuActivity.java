@@ -1,7 +1,9 @@
 package com.example.enduser.procig;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -10,9 +12,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.SyncStateContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GestureDetectorCompat;
 import android.text.Html;
 import android.util.Base64;
@@ -66,7 +71,8 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
     private boolean abrir;
     PhotoViewAttacher mAttacher;
     private String[] paginas;
-    private static final File dirReportes = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath()+"/reportes Procig");
+    private final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 1;
+    private static final File dirReportes = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath() + "/reportes Procig");
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -76,7 +82,6 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
 
@@ -98,17 +103,16 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
         toggle.syncState();
+
+        /*poner nombre de usuario*/
         String nombre = getIntent().getStringExtra("Usuario");
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         View header = navigationView.getHeaderView(0);
-/*View view=navigationView.inflateHeaderView(R.layout.nav_header_main);*/
         TextView name = (TextView) header.findViewById(R.id.name_user);
         name.setText(nombre);
 
@@ -149,17 +153,7 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
         // Handle navigation view item clicks here.
         int id = item.getItemId();
         FragmentManager fm = getSupportFragmentManager();
-/*
-        if (id == R.id.reportes_contables) {
-            setTitle("Reportes contables");
-            fm.beginTransaction().replace(R.id.content_menu, new ReportesContablesFragment()).commit();
-            Handle the camera action
-            RelativeLayout mainLayout = (RelativeLayout) findViewById(R.id.content_menu);
-            LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View layout = inflater.inflate(R.layout.activity_principal, null);
-            mainLayout.removeAllViews();
-            mainLayout.addView(layout);
-        } else */
+
         if (id == R.id.reportes_financieros) {
             setTitle("Reportes");
             fm.beginTransaction().replace(R.id.content_menu, new ReportesPresupuestalesFragment()).commit();
@@ -169,12 +163,6 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
             Intent Abrir = new Intent(this, Sax.class);
             startActivity(Abrir);
         }
-/*
-        } else if (id == R.id.nav_share) {
-            onBackPressed();
-        } else if (id == R.id.nav_send) {
-
-        }*/
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -183,8 +171,6 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
 
     public void generarReportePrueba(View v) {
         Thread th = new Thread() {
-            String pagina1;
-
             @Override
             public void run() {
                 String NAMESPACE = "http://saxsoft/MocrosoftWebService/";
@@ -257,16 +243,11 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
                 spinMes = (Spinner) findViewById(R.id.spin_reporte__presupuestal_mes);
                 img = (ImageView) findViewById(R.id.img_view_reporte_presupuestal);
                 break;
-
         }
         mes = spinMes.getSelectedItem().toString();
         reporte = spinReporte.getSelectedItem().toString();
     }
 
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
     public Action getIndexApiAction() {
         Thing object = new Thing.Builder()
                 .setName("Menu Page") // TODO: Define a title for the content shown.
@@ -302,65 +283,103 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
 
     final void compartirFloat() {
         if (abrir) {
-            ImageView ivdisplayphoto;
-            ivdisplayphoto = (ImageView) findViewById(R.id.img_view_reporte_presupuestal);
-            BitmapDrawable bitmapDrawable = (BitmapDrawable) ivdisplayphoto.getDrawable();
-            Bitmap bitmap = bitmapDrawable.getBitmap();
-
-            // Save this bitmap to a file.
+            int length = paginas.length;
             File cache = getApplicationContext().getExternalCacheDir();
-            File sharefile = new File(cache, "Reporte.png");
-            try {
-                FileOutputStream out = new FileOutputStream(sharefile);
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
-                out.flush();
-                out.close();
-            } catch (IOException e) {
-                Toast.makeText(this, "Error al compartir", Toast.LENGTH_SHORT).show();
+            File[] archivos = new File[length];
+            for (int i = 0; i < length; i++) {
+                archivos[i] = new File(cache, "reporte " + i + ".png");
+                byte[] imageAsBytes = Base64.decode(paginas[i].getBytes(), Base64.DEFAULT);
+                Bitmap bitmap = BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length);
+                try {
+                    FileOutputStream out = new FileOutputStream(archivos[i]);
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+                    out.flush();
+                    out.close();
+                } catch (IOException e) {
+                    Toast.makeText(this, "Error al compartir", Toast.LENGTH_SHORT).show();
+                }
             }
-
             // Now send it out to share
             Intent share = new Intent(android.content.Intent.ACTION_SEND);
             share.setType("image/*");
-            share.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://" + sharefile));
+            for (int i = 0; i < length; i++) {
+                share.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://" + archivos[i]));
+            }
             try {
                 startActivity(Intent.createChooser(share, "Share Report"));
             } catch (Exception e) {
                 Toast.makeText(this, "Error al guardar", Toast.LENGTH_SHORT).show();
             }
         }
+
     }
 
     final void guardarFloat() {
-        if (abrir) {
-            if (!dirReportes.exists()) {
-                dirReportes.mkdir();
+        if (abrir) { /*si hay imagenes en el imageView*/
+            int permissionCheck = ContextCompat.checkSelfPermission(MenuActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE); /*checa si tiene permiso de escribir*/
+            if (permissionCheck == PackageManager.PERMISSION_GRANTED) { /*checa si tiene permiso*/
+                guardar();
+            } else {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(MenuActivity.this,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                } else {
+                    ActivityCompat.requestPermissions(MenuActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_READ_CONTACTS);
                 }
-            if(dirReportes.exists()){
-                Thread guardar = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        for (int i = 0; i < paginas.length; i++) {
-                            byte[] imageAsBytes = Base64.decode(paginas[i].getBytes(), Base64.DEFAULT);
-                            Bitmap bitmap = BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length);
-                            String fotoname = "pag "+i + " - reporte " + reporte + "-" + mes + ".jpg";
-                            File file = new File(dirReportes, fotoname);
-                            if (file.exists()) file.delete();
-                            try {
-                                FileOutputStream out = new FileOutputStream(file);
-                                bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
-                                out.flush();
-                                out.close();
-                            } catch (Exception e) {
-                                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                            }
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_READ_CONTACTS: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    guardar();
+                } else {
+                    Toast.makeText(this, "La aplicación no tiene permiso para almacenar archivos", Toast.LENGTH_SHORT).show();
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
+    }
+
+    private void guardar() {
+        if (!dirReportes.exists()) {
+            dirReportes.mkdir();/*si no existe, crea el directorio*/
+            Thread guardar = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    boolean save = true;
+                    for (int i = 0; i < paginas.length; i++) {
+                        byte[] imageAsBytes = Base64.decode(paginas[i].getBytes(), Base64.DEFAULT);
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length);
+                        String fotoname = "pag " + i + " - reporte " + reporte + "-" + mes + ".jpg";
+                        File file = new File(dirReportes, fotoname);
+                        if (file.exists()) file.delete();
+                        try {
+                            FileOutputStream out = new FileOutputStream(file);
+                            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+                            out.flush();
+                            out.close();
+                        } catch (Exception e) {
+                            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                            save = false;
                         }
                     }
-                });
-                guardar.run();
-            } else{
-                Toast.makeText(this, "No se pudo acceder a la carpeta DCIM", Toast.LENGTH_SHORT).show();
-            }
+                    if (save) {
+                        Toast.makeText(MenuActivity.this, "Guardados en " + Environment.DIRECTORY_DCIM + "/reportes PROCIG", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(MenuActivity.this, "Ocurrieron problemas al guardar", Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+            });
+            guardar.run();
         }
     }
 
