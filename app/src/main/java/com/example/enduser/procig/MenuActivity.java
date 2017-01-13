@@ -71,6 +71,7 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
     private boolean abrir;
     PhotoViewAttacher mAttacher;
     private String[] paginas;
+    FragmentManager fm = getSupportFragmentManager();
     private final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 1;
     private static final File dirReportes = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath() + "/reportes Procig");
 
@@ -119,6 +120,8 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+        setTitle("Inicio");
+        fm.beginTransaction().replace(R.id.content_menu, new Inicio_Fragment()).commit();
     }
 
     @Override
@@ -152,8 +155,6 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        FragmentManager fm = getSupportFragmentManager();
-
         if (id == R.id.reportes_financieros) {
             setTitle("Reportes");
             fm.beginTransaction().replace(R.id.content_menu, new ReportesPresupuestalesFragment()).commit();
@@ -162,8 +163,10 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.Conocenos) {
             Intent Abrir = new Intent(this, Sax.class);
             startActivity(Abrir);
+        } else  if (id==R.id.Inicio){
+            setTitle("Inicio");
+            fm.beginTransaction().replace(R.id.content_menu, new Inicio_Fragment()).commit();
         }
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;

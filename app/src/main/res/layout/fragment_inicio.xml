@@ -1,0 +1,29 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Inicio_Fragment"
+    android:orientation="vertical"
+    android:weightSum="1">
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="193dp"
+        app:srcCompat="@drawable/procig"
+        android:id="@+id/imageView4"
+        android:layout_marginTop="10dp"/>
+
+    <TextView
+        android:text="PROCIG es un sistema integral, diseñado para garantizar el total cumplimiento de lo establecido en la Ley General de Contabilidad Gubernamental, así como las diferentes  normas emitidas por el Consejo Nacional de  Armonizacion Contable (CONAC). Logrando que los entes públicos, registren de manera armónica, delimitada y específica las operaciones  presupuestarias y contables derivadas de la gesión pública, así como otros flujos económicos.  Permitiendo una interrelación en las diversas áreas que intervienen en los diferentes procesos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView9"
+        android:layout_marginTop="10dp"
+        android:textAlignment=""
+        android:fontFamily="sans-serif"
+        android:textSize="12sp"
+        android:layout_weight="0.08" />
+</LinearLayout>
