@@ -166,7 +166,7 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.Conocenos) {
             Intent Abrir = new Intent(this, Sax.class);
             startActivity(Abrir);
-        } else  if (id==R.id.Inicio){
+        } else if (id == R.id.Inicio) {
             setTitle("Inicio");
             fm.beginTransaction().replace(R.id.content_menu, new Inicio_Fragment()).commit();
         }
@@ -312,11 +312,14 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
                 }
             }
             // Now send it out to share
+
+            ArrayList<Uri> imageUriArray = new ArrayList<Uri>();
+            for (int i = 0; i < length; i++) {
+                imageUriArray.add(Uri.parse("file://" + archivos[i]));
+            }
             Intent share = new Intent(android.content.Intent.ACTION_SEND);
             share.setType("image/*");
-            for (int i = 0; i < length; i++) {
-                share.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://" + archivos[i]));
-            }
+            share.putExtra(Intent.EXTRA_STREAM, imageUriArray);
             try {
                 startActivity(Intent.createChooser(share, "Share Report"));
             } catch (Exception e) {

@@ -7,16 +7,10 @@
         <item>Estado_de_Actividades</item>
         <item>Estado_Variacion_Hacienda_Publica</item>
         <item>Estado_Analitico_Activo</item>
-        <item>NA</item>
-        <item>*</item>
+        <item>Estado_Analitico_Deuda_Otros_Pasivo</item>
+        <item>Cambios_Situa_Financiera</item>
     </string-array>
 
-    <string-array name="array_reportes_contables">
-        <item>Contables 1</item>
-        <item>Contables 2</item>
-        <item>Contables 3</item>
-        <item>Contables 4</item>
-    </string-array>
 
     <string-array name="dependencias">
         <item>H. Salud Mental</item>
